@@ -9,6 +9,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"regexp"
 
 	"github.com/ichisuke55/translate-bot/config"
 
@@ -22,7 +23,7 @@ func translateText(projectID string, sourceLang string, targetLang string, text 
 	ctx := context.Background()
 	client, err := translate.NewTranslationClient(ctx)
 	if err != nil {
-		return "[FATAL] Internal Server Error", err
+		return "", err
 	}
 	defer client.Close()
 
@@ -45,7 +46,6 @@ func translateText(projectID string, sourceLang string, targetLang string, text 
 	for _, translation := range resp.GetTranslations() {
 		msg = fmt.Sprintf("%v\n", translation.GetTranslatedText())
 	}
-	log.Println(msg)
 
 	return msg, nil
 
@@ -76,6 +76,20 @@ func slackVerificationMiddleware(next http.HandlerFunc, signSecret string) http.
 		r.Body = ioutil.NopCloser(bytes.NewBuffer(body))
 		next.ServeHTTP(w, r)
 	}
+}
+
+func trancateText(msg string) (string, error) {
+	// slack's url text style is <URL>
+	urlRegexp := `<(http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?>`
+	rep := regexp.MustCompile(urlRegexp)
+
+	log.Printf("original text: %v\n", msg)
+	// if URL contains, trancate it.
+	match := rep.MatchString(msg)
+	if match == true {
+		msg = rep.ReplaceAllString(msg, "")
+	}
+	return msg, nil
 }
 
 func main() {
@@ -127,7 +141,14 @@ func main() {
 			case *slackevents.MessageEvent:
 				var message string
 				if event.BotID == "" {
-					message = event.Text
+					// if URL contains in message, trancate it
+					message, err = trancateText(event.Text)
+					if err != nil {
+						log.Println(err)
+						w.WriteHeader(http.StatusInternalServerError)
+						return
+					}
+					// translate text via Google Translate API
 					message, err = translateText("gcp-dev-ichisuke", "ja-jp", "en-us", message)
 					if err != nil {
 						log.Println(err)
@@ -144,8 +165,8 @@ func main() {
 		}
 	}, conf.SlackSigningSecret))
 
-	log.Println("Server listening")
-	if err := http.ListenAndServe(":8080", nil); err != nil {
+	log.Println("Translate-bot server listening")
+	if err := http.ListenAndServe(":"+conf.ListenPort, nil); err != nil {
 		log.Fatal(err)
 	}
 }

@@ -1,4 +1,4 @@
-module translate-bot
+module github.com/ichisuke55/translate-bot
 
 go 1.20
 
