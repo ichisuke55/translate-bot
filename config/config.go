@@ -6,8 +6,7 @@ import (
 
 type EnvConfig struct {
 	SlackSigningSecret string `split_words:"true"`
-	SlackBotToken      string `split_words:"true"`
-	SlackAppToken      string `split_words:"true"`
+	SlackToken         string `split_words:"true"`
 	GoogleAPIToken     string `split_words:"true" default:"key.json"`
 	ListenPort         string `split_words:"true" default:"8080"`
 }
