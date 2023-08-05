@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.0.0](https://github.com/ichisuke55/translate-bot/compare/v1.0.0...v2.0.0) (2023-08-05)
+
+
+### ⚠ BREAKING CHANGES
+
+* change using socket mode
+
+### Features
+
+* change using socket mode ([62baa57](https://github.com/ichisuke55/translate-bot/commit/62baa572ab45ccb2af71034469210315a1089b12))
+
 ## 1.0.0 (2023-07-17)
 
 
