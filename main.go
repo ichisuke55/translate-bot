@@ -3,12 +3,12 @@ package main
 import (
 	"bytes"
 	"context"
-	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"regexp"
 
 	"github.com/ichisuke55/translate-bot/config"
@@ -16,6 +16,7 @@ import (
 	translate "cloud.google.com/go/translate/apiv3"
 	"github.com/slack-go/slack"
 	"github.com/slack-go/slack/slackevents"
+	"github.com/slack-go/slack/socketmode"
 	translatepb "google.golang.org/genproto/googleapis/cloud/translate/v3"
 )
 
@@ -101,72 +102,64 @@ func main() {
 	}
 
 	// Set Slack API client
-	client := slack.New(conf.SlackToken)
+	client := slack.New(
+		conf.SlackBotToken,
+		slack.OptionAppLevelToken(conf.SlackAppToken),
+		slack.OptionDebug(true),
+		slack.OptionLog(log.New(os.Stdout, "apiClient: ", log.Lshortfile|log.LstdFlags)),
+	)
 
-	// Slack Event handler
-	http.HandleFunc("/slack/events", slackVerificationMiddleware(func(w http.ResponseWriter, r *http.Request) {
-		body, err := ioutil.ReadAll(r.Body)
-		if err != nil {
-			log.Println(err)
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
+	socketClient := socketmode.New(
+		client,
+		socketmode.OptionDebug(true),
+		socketmode.OptionLog(log.New(os.Stdout, "socketClient: ", log.Lshortfile|log.LstdFlags)),
+	)
 
-		eventsAPIEvent, err := slackevents.ParseEvent(json.RawMessage(body), slackevents.OptionNoVerifyToken())
-		if err != nil {
-			log.Println(err)
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-
-		// Listen slack event
-		switch eventsAPIEvent.Type {
-		case slackevents.URLVerification:
-			var res *slackevents.ChallengeResponse
-			if err := json.Unmarshal(body, &res); err != nil {
-				log.Println(err)
-				w.WriteHeader(http.StatusInternalServerError)
-				return
-			}
-
-			w.Header().Set("Content-Tyep", "text/plain")
-			if _, err := w.Write([]byte(res.Challenge)); err != nil {
-				log.Println(err)
-				w.WriteHeader(http.StatusInternalServerError)
-				return
-			}
-		case slackevents.CallbackEvent:
-			innerEvent := eventsAPIEvent.InnerEvent
-			switch event := innerEvent.Data.(type) {
-			case *slackevents.MessageEvent:
-				var message string
-				if event.BotID == "" {
-					// if URL contains in message, trancate it
-					message, err = trancateText(event.Text)
-					if err != nil {
-						log.Println(err)
-						w.WriteHeader(http.StatusInternalServerError)
-						return
-					}
-					// translate text via Google Translate API
-					message, err = translateText("gcp-dev-ichisuke", "ja-jp", "en-us", message)
-					if err != nil {
-						log.Println(err)
-						w.WriteHeader(http.StatusInternalServerError)
-						return
-					}
-					if _, _, err := client.PostMessage(event.Channel, slack.MsgOptionText(message, false)); err != nil {
-						log.Println(err)
-						w.WriteHeader(http.StatusInternalServerError)
-						return
-					}
+	go func() {
+		for event := range socketClient.Events {
+			switch event.Type {
+			case socketmode.EventTypeEventsAPI:
+				eventAPIEvent, ok := event.Data.(slackevents.EventsAPIEvent)
+				if !ok {
+					log.Printf("Ignored %v\n", event)
+					continue
 				}
+				// Prevent from sending duplicate message
+				socketClient.Ack(*event.Request)
+
+				switch eventAPIEvent.Type {
+				case slackevents.CallbackEvent:
+					switch evt := eventAPIEvent.InnerEvent.Data.(type) {
+					case *slackevents.MessageEvent:
+						if evt.BotID == "" {
+							// if URL contains in message, trancate it
+							message, err := trancateText(evt.Text)
+							if err != nil {
+								log.Println(err)
+								return
+							}
+							// translate text via GoogleTranslate API
+							message, err = translateText("gcp-dev-ichisuke", "ja-jp", "en-us", message)
+							if err != nil {
+								log.Println(err)
+								return
+							}
+							_, _, err = client.PostMessage(
+								evt.Channel,
+								slack.MsgOptionText(message, false),
+							)
+							if err != nil {
+								log.Println(err)
+								return
+							}
+						}
+					}
+
+				}
+
 			}
 		}
-	}, conf.SlackSigningSecret))
+	}()
 
-	log.Println("Translate-bot server listening")
-	if err := http.ListenAndServe(":"+conf.ListenPort, nil); err != nil {
-		log.Fatal(err)
-	}
+	socketClient.Run()
 }
