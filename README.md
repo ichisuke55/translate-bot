@@ -10,6 +10,7 @@ export SLACK_BOT_TOKEN=<Your slack bot oauth token>
 export SLACK_APP_TOKEN=<Your slack app token for socket mode>
 export GOOGLE_API_TOKEN=<Your Google Cloud Translate API token>
 export GOOGLE_APPLICATION_CREDENTIALS=<Your Google Cloud default credentials>
+export PROJECT_ID=<Your Google Cloud Project ID>
 ```
 
 2. Run bot server and integrate with slack
