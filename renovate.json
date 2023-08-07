@@ -1,0 +1,30 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:base",
+    ":dependencyDashboard",
+    ":semanticPrefixFixDepsChoreOthers",
+    ":ignoreModulesAndTests",
+    ":autodetectPinVersions",
+    ":prHourlyLimitNone",
+    "group:monorepos",
+    "group:recommended",
+    "workarounds:all",
+    ":semanticCommits",
+    ":separateMultipleMajorReleases",
+    ":semanticCommitTypeAll(fix)",
+    ":combinePatchMinorReleases",
+    ":ignoreUnstable",
+    ":prImmediately",
+    ":semanticCommits",
+    ":updateNotScheduled",
+    ":automergeAll",
+    ":maintainLockFilesDisabled",
+    ":timezone(Asia/Tokyo)",
+    ":label(renovate)"
+  ],
+  "prConcurrentLimit": 1,
+  "postUpdateOptions": [
+    "gomodTidy"
+  ]
+}
