@@ -1,13 +1,9 @@
 package main
 
 import (
-	"bytes"
 	"context"
 	"fmt"
-	"io"
-	"io/ioutil"
 	"log"
-	"net/http"
 	"os"
 	"regexp"
 
@@ -50,33 +46,6 @@ func translateText(projectID string, sourceLang string, targetLang string, text 
 
 	return msg, nil
 
-}
-
-func slackVerificationMiddleware(next http.HandlerFunc, signSecret string) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		verifier, err := slack.NewSecretsVerifier(r.Header, signSecret)
-		if err != nil {
-			log.Println(err)
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-
-		bodyReader := io.TeeReader(r.Body, &verifier)
-		body, err := ioutil.ReadAll(bodyReader)
-		if err != nil {
-			log.Println(err)
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-
-		if err := verifier.Ensure(); err != nil {
-			log.Println(err)
-			w.WriteHeader(http.StatusBadRequest)
-			return
-		}
-		r.Body = ioutil.NopCloser(bytes.NewBuffer(body))
-		next.ServeHTTP(w, r)
-	}
 }
 
 func trancateText(msg string) (string, error) {
