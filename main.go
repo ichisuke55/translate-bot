@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"regexp"
+	"unicode"
 
 	"github.com/ichisuke55/translate-bot/config"
 
@@ -56,10 +57,24 @@ func trancateText(msg string) (string, error) {
 	log.Printf("original text: %v\n", msg)
 	// if URL contains, trancate it.
 	match := rep.MatchString(msg)
-	if match == true {
+	if match {
 		msg = rep.ReplaceAllString(msg, "")
 	}
 	return msg, nil
+}
+
+func isJapanese(msg string) bool {
+	m := []rune(msg)
+	if unicode.In(m[0], unicode.Hiragana) {
+		return true
+	}
+	if unicode.In(m[0], unicode.Katakana) {
+		return true
+	}
+	if unicode.In(m[0], unicode.Han) {
+		return true
+	}
+	return false
 }
 
 func main() {
@@ -108,25 +123,23 @@ func main() {
 								return
 							}
 							// if only english in message
-							engRegexp := `^[ -~]*$`
-							rep := regexp.MustCompile(engRegexp)
-							match := rep.MatchString(message)
-							if !match {
+							match := isJapanese(message)
+							if match {
 								// translate text via GoogleTranslate API
 								message, err = translateText(conf.ProjectID, "ja-jp", "en-us", message)
 								if err != nil {
 									log.Println(err)
 									return
 								}
-							}
-
-							_, _, err = client.PostMessage(
-								evt.Channel,
-								slack.MsgOptionText(message, false),
-							)
-							if err != nil {
-								log.Println(err)
-								return
+								// post slack message
+								_, _, err = client.PostMessage(
+									evt.Channel,
+									slack.MsgOptionText(message, false),
+								)
+								if err != nil {
+									log.Println(err)
+									return
+								}
 							}
 						}
 					}
