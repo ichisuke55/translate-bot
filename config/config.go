@@ -10,6 +10,7 @@ type EnvConfig struct {
 	SlackAppToken      string `split_words:"true"`
 	GoogleAPIToken     string `split_words:"true" default:"key.json"`
 	ListenPort         string `split_words:"true" default:"8080"`
+	ProjectID          string `split_words:"true"`
 }
 
 func NewEnvConfig() (*EnvConfig, error) {

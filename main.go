@@ -107,12 +107,19 @@ func main() {
 								log.Println(err)
 								return
 							}
-							// translate text via GoogleTranslate API
-							message, err = translateText("gcp-dev-ichisuke", "ja-jp", "en-us", message)
-							if err != nil {
-								log.Println(err)
-								return
+							// if only english in message
+							engRegexp := `^[ -~]*$`
+							rep := regexp.MustCompile(engRegexp)
+							match := rep.MatchString(message)
+							if !match {
+								// translate text via GoogleTranslate API
+								message, err = translateText(conf.ProjectID, "ja-jp", "en-us", message)
+								if err != nil {
+									log.Println(err)
+									return
+								}
 							}
+
 							_, _, err = client.PostMessage(
 								evt.Channel,
 								slack.MsgOptionText(message, false),
