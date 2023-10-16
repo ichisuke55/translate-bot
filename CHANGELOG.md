@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.2](https://github.com/ichisuke55/translate-bot/compare/v2.0.1...v2.0.2) (2023-10-16)
+
+
+### Bug Fixes
+
+* **deps:** update google.golang.org/genproto digest to e917dd1 ([84e4c84](https://github.com/ichisuke55/translate-bot/commit/84e4c844b3192dd04bd60d18c24ef1c8ac2d8b77))
+
 ## [2.0.1](https://github.com/ichisuke55/translate-bot/compare/v2.0.0...v2.0.1) (2023-08-07)
 
 
