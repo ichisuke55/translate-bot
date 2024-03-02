@@ -5,7 +5,7 @@ go 1.20
 require (
 	cloud.google.com/go/translate v1.10.1
 	github.com/kelseyhightower/envconfig v1.4.0
-	github.com/slack-go/slack v0.12.2
+	github.com/slack-go/slack v0.12.5
 	google.golang.org/genproto v0.0.0-20240228224816-df926f6c8641
 )
 
