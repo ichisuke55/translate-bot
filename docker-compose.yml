@@ -1,0 +1,8 @@
+services:
+  app:
+    build: .
+    volumes:
+      - ./key.json:/app/key.json
+    env_file:
+      - .env
+    tty: true
