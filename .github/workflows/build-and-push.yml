@@ -1,0 +1,28 @@
+on:
+  push:
+    branches:
+      - main
+
+name: Build and Push
+
+jobs:
+  publish_docker_image:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Login to ghcr
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build Container
+        run: |
+          docker build --tag ghcr.io/$GITHUB_ACTOR/translate-bot:latest \
+          --tag ghcr.io/$GITHUB_ACTOR/translate-bot:$(echo $GITHUB_SHA | head -c7) .
+
+      - name: Push image to ghcr
+        run: |
+          docker push ghcr.io/$GITHUB_ACTOR/translate-bot:latest
+          docker push ghcr.io/$GITHUB_ACTOR/translate-bot:$(echo $GITHUB_SHA | head -c7)
