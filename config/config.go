@@ -5,12 +5,10 @@ import (
 )
 
 type EnvConfig struct {
-	SlackSigningSecret string `split_words:"true"`
-	SlackBotToken      string `split_words:"true"`
-	SlackAppToken      string `split_words:"true"`
-	GoogleAPIToken     string `split_words:"true" default:"key.json"`
-	ListenPort         string `split_words:"true" default:"8080"`
-	ProjectID          string `split_words:"true"`
+	SlackBotToken  string `split_words:"true"`
+	SlackAppToken  string `split_words:"true"`
+	GoogleAPIToken string `split_words:"true" default:"key.json"`
+	ProjectID      string `split_words:"true"`
 }
 
 func NewEnvConfig() (*EnvConfig, error) {

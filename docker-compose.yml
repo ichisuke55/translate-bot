@@ -1,6 +1,7 @@
 services:
   app:
     build: .
+    # build: ghcr.io/ichisuke55/translate-bot
     volumes:
       - ./key.json:/app/key.json
     env_file:
