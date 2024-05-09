@@ -47,5 +47,5 @@ jobs:
         with:
           context: .
           push: true
-          tags: ghcr.io/${{ GITHUB_ACTOR }}/translate-bot:${{ steps.meta.outputs.tags }}
+          tags: ghcr.io/${GITHUB_ACTOR}/translate-bot:${{ steps.meta.outputs.tags }}
 
