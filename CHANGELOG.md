@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.3](https://github.com/ichisuke55/translate-bot/compare/v2.0.2...v2.0.3) (2024-05-09)
+
+
+### Bug Fixes
+
+* github actions wf with tag ([7d8fd33](https://github.com/ichisuke55/translate-bot/commit/7d8fd334f060ebaf745f58fb7272289769546563))
+
 ## [2.0.2](https://github.com/ichisuke55/translate-bot/compare/v2.0.1...v2.0.2) (2024-05-09)
 
 
