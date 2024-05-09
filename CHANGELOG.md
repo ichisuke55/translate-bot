@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.7](https://github.com/ichisuke55/translate-bot/compare/v2.0.6...v2.0.7) (2024-05-09)
+
+
+### Bug Fixes
+
+* release github action ([d62537a](https://github.com/ichisuke55/translate-bot/commit/d62537ab3f13ef33eeaf03191be1cd6ef0f74a39))
+
 ## [2.0.6](https://github.com/ichisuke55/translate-bot/compare/v2.0.5...v2.0.6) (2024-05-09)
 
 
