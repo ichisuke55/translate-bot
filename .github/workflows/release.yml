@@ -23,20 +23,21 @@ jobs:
         if: ${{ steps.release.outputs.release_created }}
         uses: docker/setup-buildx-action@v3
 
-      - name: set tag from release-please
+      - name: Extract tag from release-please
         if: ${{ steps.release.outputs.release_created }}
         run: |
           if [ -n "${{ steps.release.outputs.tag_name }}" ]; then
             echo "TAG=${{ steps.release.outputs.tag_name }}" >> $GITHUB_ENV
           fi
 
-      - name: Extract tag version
+      - name: Set image and tag
         if: ${{ steps.release.outputs.release_created }}
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: |
-            ghcr.io/ichisuke55/translate-bot
+          images: ghcr.io/ichisuke55/translate-bot
+          tags: |
+            type=semver,pattern={{version}},value=${{ env.TAG }}
 
       - name: Login to ghcr
         if: ${{ steps.release.outputs.release_created }}
@@ -52,4 +53,4 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ env.TAG }}
+          tags: ${{ steps.meta.outputs.tags }}
