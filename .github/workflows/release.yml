@@ -8,7 +8,9 @@ jobs:
   release-please:
     runs-on: ubuntu-latest
     steps:
-      - uses: google-github-actions/release-please-action@v4
+      - name: Release-please
+        id: release
+        uses: google-github-actions/release-please-action@v4
         with:
           release-type: go
           default-branch: main
