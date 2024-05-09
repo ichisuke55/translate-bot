@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.0.5](https://github.com/ichisuke55/translate-bot/compare/v2.0.4...v2.0.5) (2024-05-09)
+
+
+### Bug Fixes
+
+* fix actor variable ([8a7d5b9](https://github.com/ichisuke55/translate-bot/commit/8a7d5b91dd7d9a5475e4db881ad5f64a2d87fa73))
+* github_actor variable ([eaa5068](https://github.com/ichisuke55/translate-bot/commit/eaa506825f4ce4fe7b83ed26dfd6a87e980ac866))
+
 ## [2.0.4](https://github.com/ichisuke55/translate-bot/compare/v2.0.3...v2.0.4) (2024-05-09)
 
 
