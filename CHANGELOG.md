@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.8](https://github.com/ichisuke55/translate-bot/compare/v2.0.7...v2.0.8) (2024-05-09)
+
+
+### Bug Fixes
+
+* set tag version at docker/metadata-action ([5fd49d8](https://github.com/ichisuke55/translate-bot/commit/5fd49d891e7c8f5136ecc6c1c4a3cff571cfc87e))
+
 ## [2.0.7](https://github.com/ichisuke55/translate-bot/compare/v2.0.6...v2.0.7) (2024-05-09)
 
 
