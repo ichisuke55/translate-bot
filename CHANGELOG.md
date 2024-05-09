@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.6](https://github.com/ichisuke55/translate-bot/compare/v2.0.5...v2.0.6) (2024-05-09)
+
+
+### Bug Fixes
+
+* remove images name at tags section ([155d84b](https://github.com/ichisuke55/translate-bot/commit/155d84b27b99c8a6a931976170523f572f51c20c))
+
 ## [2.0.5](https://github.com/ichisuke55/translate-bot/compare/v2.0.4...v2.0.5) (2024-05-09)
 
 
