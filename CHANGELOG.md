@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.4](https://github.com/ichisuke55/translate-bot/compare/v2.0.3...v2.0.4) (2024-05-09)
+
+
+### Bug Fixes
+
+* add release-please id ([545b504](https://github.com/ichisuke55/translate-bot/commit/545b5049d34bd6f0cff7291d8284592ee7bd49d1))
+
 ## [2.0.3](https://github.com/ichisuke55/translate-bot/compare/v2.0.2...v2.0.3) (2024-05-09)
 
 
