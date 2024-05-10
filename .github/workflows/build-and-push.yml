@@ -20,8 +20,24 @@ jobs:
 
       - name: Build Container
         run: |
-          docker build --tag ghcr.io/$GITHUB_ACTOR/translate-bot:latest .
+          docker build --tag ghcr.io/${{ github.repository_owner }}/translate-bot:latest .
+
+      - name: Run Trivy scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'ghcr.io/${{ github.repository_owner }}/translate-bot:latest'
+          format: 'sarif'
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+          output: 'trivy-results.sarif'
+
+      - name: Upload Truvy scan results
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: 'trivy-results.sarif'
 
       - name: Push image to ghcr
         run: |
-          docker push ghcr.io/$GITHUB_ACTOR/translate-bot:latest
+          docker push ghcr.io/${{ github.repository_owner }}/translate-bot:latest
