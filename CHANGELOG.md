@@ -1,5 +1,19 @@
 # Changelog
 
+## [2.1.0](https://github.com/ichisuke55/translate-bot/compare/v2.0.8...v2.1.0) (2024-05-11)
+
+
+### Features
+
+* add trivy scanner at CI ([020e835](https://github.com/ichisuke55/translate-bot/commit/020e835c5f779ecb3cdf616ec0c1364c72d2f0bc))
+
+
+### Bug Fixes
+
+* **deps:** update dependency go to v1.22.3 ([f44403c](https://github.com/ichisuke55/translate-bot/commit/f44403c69eba28757b14b046b347044c0b498f85))
+* use scan only ([44d3b6c](https://github.com/ichisuke55/translate-bot/commit/44d3b6cf53ebb18469b69cbe81490f5dc13f5caf))
+* use zap logging ([2b5abdb](https://github.com/ichisuke55/translate-bot/commit/2b5abdbf5961a9e180c48332184018407bfda536))
+
 ## [2.0.8](https://github.com/ichisuke55/translate-bot/compare/v2.0.7...v2.0.8) (2024-05-09)
 
 
