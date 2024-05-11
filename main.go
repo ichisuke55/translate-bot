@@ -9,55 +9,52 @@ import (
 	"unicode"
 
 	"github.com/ichisuke55/translate-bot/config"
+	"github.com/ichisuke55/translate-bot/logging"
+	"go.uber.org/zap"
 
 	translate "cloud.google.com/go/translate/apiv3"
+	"cloud.google.com/go/translate/apiv3/translatepb"
 	"github.com/slack-go/slack"
 	"github.com/slack-go/slack/slackevents"
 	"github.com/slack-go/slack/socketmode"
-	translatepb "google.golang.org/genproto/googleapis/cloud/translate/v3"
 )
 
 func translateText(projectID string, sourceLang string, targetLang string, text string) (string, error) {
 	ctx := context.Background()
-	client, err := translate.NewTranslationClient(ctx)
+	c, err := translate.NewTranslationClient(ctx)
 	if err != nil {
 		return "", err
 	}
-	defer client.Close()
+	defer c.Close()
 
 	req := &translatepb.TranslateTextRequest{
+		Contents:           []string{text},
+		MimeType:           "text/plain", // Mime types: "text/plain", default is "text/html"
 		Parent:             fmt.Sprintf("projects/%s/locations/global", projectID),
 		SourceLanguageCode: sourceLang,
 		TargetLanguageCode: targetLang,
-		MimeType:           "text/plain", // Mime types: "text/plain", "text/html"
-		Contents:           []string{text},
 	}
 
-	resp, err := client.TranslateText(ctx, req)
+	resp, err := c.TranslateText(ctx, req)
 	if err != nil {
-		return "[FATAL] cannot translate message", err
+		return "[ERROR] cannot translate message", err
 	}
-	log.Println(resp.GetTranslations())
 
-	// Display the translation for each input text provided
+	// Return the translation result for each input text provided
 	var msg string
 	for _, translation := range resp.GetTranslations() {
 		msg = fmt.Sprintf("%v\n", translation.GetTranslatedText())
 	}
-
 	return msg, nil
-
 }
 
 func trancateText(msg string) (string, error) {
-	// slack's url text style is <URL>
+	// slack's URL text style is <URL>
 	urlRegexp := `<(http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?>`
 	rep := regexp.MustCompile(urlRegexp)
 
-	log.Printf("original text: %v\n", msg)
-	// if URL contains, trancate it.
-	match := rep.MatchString(msg)
-	if match {
+	// if URL contains in message, trancate it.
+	if match := rep.MatchString(msg); match {
 		msg = rep.ReplaceAllString(msg, "")
 	}
 	return msg, nil
@@ -71,33 +68,46 @@ func isJapanese(msg string) bool {
 	if unicode.In(m[0], unicode.Katakana) {
 		return true
 	}
-	if unicode.In(m[0], unicode.Han) {
+	if unicode.In(m[0], unicode.Han) { // check 漢字
 		return true
 	}
 	return false
 }
 
 func main() {
-
 	// Load environment variables
 	conf, err := config.NewEnvConfig()
 	if err != nil {
 		log.Fatal("cannot load environment variables")
 	}
 
+	// Init logger
+	logger, err := logging.NewLogger()
+	if err != nil {
+		log.Fatal("cannot initialize logger")
+	}
+	defer logger.Sync()
+
 	// Set Slack API client
 	client := slack.New(
 		conf.SlackBotToken,
 		slack.OptionAppLevelToken(conf.SlackAppToken),
-		slack.OptionDebug(true),
+		// slack.OptionDebug(true),
 		slack.OptionLog(log.New(os.Stdout, "apiClient: ", log.Lshortfile|log.LstdFlags)),
 	)
+	// Test authenticate connection
+	_, err = client.AuthTest()
+	if err != nil {
+		logger.Fatal("failed to authenticate", zap.Error(err))
+	}
 
 	socketClient := socketmode.New(
 		client,
-		socketmode.OptionDebug(true),
+		// socketmode.OptionDebug(true),
 		socketmode.OptionLog(log.New(os.Stdout, "socketClient: ", log.Lshortfile|log.LstdFlags)),
 	)
+
+	logger.Info("Bot starting...")
 
 	go func() {
 		for event := range socketClient.Events {
@@ -105,7 +115,7 @@ func main() {
 			case socketmode.EventTypeEventsAPI:
 				eventAPIEvent, ok := event.Data.(slackevents.EventsAPIEvent)
 				if !ok {
-					log.Printf("Ignored %v\n", event)
+					logger.Info("Ignored event", zap.Any("event", event))
 					continue
 				}
 				// Prevent from sending duplicate message
@@ -116,28 +126,30 @@ func main() {
 					switch evt := eventAPIEvent.InnerEvent.Data.(type) {
 					case *slackevents.MessageEvent:
 						if evt.BotID == "" {
+							logger.Debug("original text", zap.String("message", evt.Text))
 							// if URL contains in message, trancate it
 							message, err := trancateText(evt.Text)
 							if err != nil {
-								log.Println(err)
+								logger.Error("failed to trancate text", zap.Error(err))
 								return
 							}
 							// if only english in message
 							match := isJapanese(message)
 							if match {
 								// translate text via GoogleTranslate API
-								message, err = translateText(conf.ProjectID, "ja-jp", "en-us", message)
+								translatedMessage, err := translateText(conf.ProjectID, "ja-jp", "en-us", message)
+								logger.Info("translated result", zap.String("originalText", message), zap.String("translatedText", translatedMessage))
 								if err != nil {
-									log.Println(err)
+									logger.Error("failed to translate", zap.Error(err))
 									return
 								}
 								// post slack message
 								_, _, err = client.PostMessage(
 									evt.Channel,
-									slack.MsgOptionText(message, false),
+									slack.MsgOptionText(translatedMessage, false),
 								)
 								if err != nil {
-									log.Println(err)
+									logger.Error("failed to post slack message", zap.Error(err))
 									return
 								}
 							}
@@ -149,6 +161,5 @@ func main() {
 			}
 		}
 	}()
-
 	socketClient.Run()
 }
