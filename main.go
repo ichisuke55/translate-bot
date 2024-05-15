@@ -81,8 +81,15 @@ func main() {
 		log.Fatal("cannot load environment variables")
 	}
 
+	// Create and open logfile
+	logfile, err := os.OpenFile(conf.LogFile, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	if err != nil {
+		log.Fatalf("cannot create or open log file: %s", err)
+	}
+	defer logfile.Close()
+
 	// Init logger
-	logger, err := logging.NewLogger()
+	logger, err := logging.NewLogger(logfile)
 	if err != nil {
 		log.Fatal("cannot initialize logger")
 	}

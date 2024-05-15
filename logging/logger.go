@@ -7,7 +7,7 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
-func NewLogger() (*zap.Logger, error) {
+func NewLogger(logfile *os.File) (*zap.Logger, error) {
 	encoderConf := zapcore.EncoderConfig{
 		TimeKey:        "timestamp",
 		LevelKey:       "level",
@@ -20,18 +20,12 @@ func NewLogger() (*zap.Logger, error) {
 		EncodeDuration: zapcore.StringDurationEncoder,
 		EncodeCaller:   zapcore.ShortCallerEncoder,
 	}
-	// conf := zap.Config{
-	// 	Level:         zap.NewAtomicLevel(),
-	// 	Development:   false,
-	// 	Encoding:      "json",
-	// 	EncoderConfig: encoderConf,
-	// }
-	// logger, err := conf.Build()
-	// if err != nil {
-	// 	return nil, err
-	// }
+
+	fileEncoder := zapcore.NewJSONEncoder(encoderConf)
 	consoleEncoder := zapcore.NewJSONEncoder(encoderConf)
+
 	core := zapcore.NewTee(
+		zapcore.NewCore(fileEncoder, zapcore.AddSync(logfile), zap.InfoLevel),
 		zapcore.NewCore(consoleEncoder, zapcore.AddSync(os.Stdout), zap.InfoLevel),
 	)
 	l := zap.New(core)

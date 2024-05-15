@@ -9,6 +9,7 @@ type EnvConfig struct {
 	SlackAppToken  string `split_words:"true"`
 	GoogleAPIToken string `split_words:"true" default:"key.json"`
 	ProjectID      string `split_words:"true"`
+	LogFile        string `split_words:"true" default:"bot-log.log"`
 }
 
 func NewEnvConfig() (*EnvConfig, error) {

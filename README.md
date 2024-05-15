@@ -10,6 +10,7 @@ export SLACK_APP_TOKEN=<Your slack app token for socket mode>
 export GOOGLE_API_TOKEN=<Your Google Cloud Translate API token>
 export GOOGLE_APPLICATION_CREDENTIALS=<Your Google Cloud service account credential JSON file>
 export PROJECT_ID=<Your Google Cloud Project ID>
+export LOG_FILE=<set log file path>
 ```
 
 or create `.env` file.
@@ -20,6 +21,7 @@ SLACK_APP_TOKEN=
 GOOGLE_API_TOKEN=
 GOOGLE_APPLICATION_CREDENTIALS=
 PROJECT_ID=
+LOG_FILE=
 ```
 
 2. Run bot server and check integration with slack

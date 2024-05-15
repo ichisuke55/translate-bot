@@ -4,6 +4,7 @@ services:
     # build: ghcr.io/ichisuke55/translate-bot
     volumes:
       - ./key.json:/app/key.json
+      - ./log:/var/log:rw
     env_file:
       - .env
     tty: true
