@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.1.1](https://github.com/ichisuke55/translate-bot/compare/v2.1.0...v2.1.1) (2024-05-15)
+
+
+### Bug Fixes
+
+* add logfile output prop ([2b227ea](https://github.com/ichisuke55/translate-bot/commit/2b227ea9c70af91eecb1fe6d0a3a3a8e29af335e))
+* **deps:** update golang docker tag to v1.22.3 ([922a560](https://github.com/ichisuke55/translate-bot/commit/922a560ffaf57811978a43705cdf097e4443a02d))
+
 ## [2.1.0](https://github.com/ichisuke55/translate-bot/compare/v2.0.8...v2.1.0) (2024-05-11)
 
 
