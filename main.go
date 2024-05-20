@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"reflect"
 	"regexp"
 	"unicode"
 
@@ -93,7 +94,7 @@ func main() {
 	if err != nil {
 		log.Fatal("cannot initialize logger")
 	}
-	defer logger.Sync()
+	defer logger.Sync() //nolint:errcheck
 
 	// Set Slack API client
 	client := slack.New(
@@ -123,7 +124,6 @@ func main() {
 				eventAPIEvent, ok := event.Data.(slackevents.EventsAPIEvent)
 				if !ok {
 					logger.Info("Ignored event", zap.Any("event", event))
-					continue
 				}
 				// Prevent from sending duplicate message
 				socketClient.Ack(*event.Request)
@@ -132,41 +132,53 @@ func main() {
 				case slackevents.CallbackEvent:
 					switch evt := eventAPIEvent.InnerEvent.Data.(type) {
 					case *slackevents.MessageEvent:
-						if evt.BotID == "" {
-							logger.Debug("original text", zap.String("message", evt.Text))
-							// if URL contains in message, trancate it
-							message, err := trancateText(evt.Text)
+						// skip bot message
+						if evt.BotID != "" {
+							logger.Debug("this message sent by bot.")
+							continue
+						}
+
+						logger.Debug("original text", zap.String("message", evt.Text))
+						logger.Debug("event message information", zap.Any("type", reflect.TypeOf(evt)), zap.Any("info", evt))
+
+						// skip image only, or delete image message
+						if evt.Text == "" {
+							logger.Debug("skip translate message, because of image only.")
+							continue
+						}
+
+						// if URL contains in message, trancate it
+						message, err := trancateText(evt.Text)
+						if err != nil {
+							logger.Error("failed to trancate text", zap.Error(err))
+						}
+
+						// if only english in message
+						match := isJapanese(message)
+						if match {
+							// translate text via GoogleTranslate API
+							translatedMessage, err := translateText(conf.ProjectID, "ja-jp", "en-us", message)
 							if err != nil {
-								logger.Error("failed to trancate text", zap.Error(err))
-								return
+								logger.Error("failed to translate", zap.Error(err))
 							}
-							// if only english in message
-							match := isJapanese(message)
-							if match {
-								// translate text via GoogleTranslate API
-								translatedMessage, err := translateText(conf.ProjectID, "ja-jp", "en-us", message)
-								logger.Info("translated result", zap.String("originalText", message), zap.String("translatedText", translatedMessage))
-								if err != nil {
-									logger.Error("failed to translate", zap.Error(err))
-									return
-								}
-								// post slack message
-								_, _, err = client.PostMessage(
-									evt.Channel,
-									slack.MsgOptionText(translatedMessage, false),
-								)
-								if err != nil {
-									logger.Error("failed to post slack message", zap.Error(err))
-									return
-								}
+
+							logger.Info("translate success!", zap.String("originalText", message), zap.String("translatedText", translatedMessage))
+
+							// post slack message
+							_, _, err = client.PostMessage(
+								evt.Channel,
+								slack.MsgOptionText(translatedMessage, false),
+							)
+							if err != nil {
+								logger.Error("failed to post slack message", zap.Error(err))
 							}
 						}
 					}
-
 				}
-
 			}
 		}
 	}()
-	socketClient.Run()
+	if err = socketClient.Run(); err != nil {
+		logger.Error("failed to reconnect to slack", zap.Error(err))
+	}
 }
