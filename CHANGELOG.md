@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.1.2](https://github.com/ichisuke55/translate-bot/compare/v2.1.1...v2.1.2) (2024-05-20)
+
+
+### Bug Fixes
+
+* **deps:** update module github.com/slack-go/slack to v0.13.0 ([fd01337](https://github.com/ichisuke55/translate-bot/commit/fd013370bf9f629c5915d891046f54563803a3b4))
+* skip image only message ([f2c045c](https://github.com/ichisuke55/translate-bot/commit/f2c045ca97051b23da4278097d2813026ee28d2c))
+
 ## [2.1.1](https://github.com/ichisuke55/translate-bot/compare/v2.1.0...v2.1.1) (2024-05-15)
 
 
