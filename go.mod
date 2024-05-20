@@ -7,7 +7,7 @@ toolchain go1.22.3
 require (
 	cloud.google.com/go/translate v1.10.3
 	github.com/kelseyhightower/envconfig v1.4.0
-	github.com/slack-go/slack v0.12.5
+	github.com/slack-go/slack v0.13.0
 	go.uber.org/zap v1.27.0
 )
 
