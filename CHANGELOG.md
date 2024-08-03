@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.3](https://github.com/ichisuke55/translate-bot/compare/v2.1.2...v2.1.3) (2024-08-03)
+
+
+### Bug Fixes
+
+* **deps:** update alpine docker tag to v3.20 ([062e1ca](https://github.com/ichisuke55/translate-bot/commit/062e1ca929a1e5b9bdf136a9603af9bfb5a434fd))
+
 ## [2.1.2](https://github.com/ichisuke55/translate-bot/compare/v2.1.1...v2.1.2) (2024-05-20)
 
 
