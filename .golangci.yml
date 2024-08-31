@@ -3,6 +3,8 @@ linters-settings:
     check-shadowing: false
   gocyclo:
     min-complexity: 30
+  gocognit:
+    min-complexity: 30
   misspell:
     locale: US
 
