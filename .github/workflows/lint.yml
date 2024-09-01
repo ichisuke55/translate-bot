@@ -1,4 +1,4 @@
-name: lint
+name: lint_and_scan
 on:
   pull_request:
     paths:
@@ -31,3 +31,17 @@ jobs:
           golangci_lint_flags: "--config=./.golangci.yml"
           fail_on_error: true
           reporter: "github-pr-review"
+  vuln_scan:
+    name: scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: Scan Go vuln check
+        uses: golang/govulncheck-action@v1
