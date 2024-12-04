@@ -1,4 +1,4 @@
-FROM golang:1.22.6-alpine3.20 AS go
+FROM golang:1.23.4-alpine3.20 AS go
 WORKDIR /app
 COPY go.mod go.sum main.go ./
 COPY config/ ./config
