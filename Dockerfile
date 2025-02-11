@@ -6,7 +6,7 @@ COPY logging/ ./logging
 RUN go mod download \
     && go build -o main /app/main.go
 
-FROM alpine:3.20
+FROM alpine:3.21
 WORKDIR /app
 RUN apk --update add tzdata && \
     cp /usr/share/zoneinfo/Asia/Tokyo /etc/localtime && \
