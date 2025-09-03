@@ -1,7 +1,8 @@
 module github.com/ichisuke55/translate-bot
 
-go 1.22.6
-toolchain go1.24.1
+go 1.23.0
+
+toolchain go1.25.1
 
 require (
 	cloud.google.com/go/translate v1.10.3
