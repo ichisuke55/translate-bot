@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.1.3](https://github.com/ichisuke55/translate-bot/compare/v2.1.2...v2.1.3) (2025-09-19)
+
+
+### Bug Fixes
+
+* **deps:** update alpine docker tag to v3.20 ([062e1ca](https://github.com/ichisuke55/translate-bot/commit/062e1ca929a1e5b9bdf136a9603af9bfb5a434fd))
+* **deps:** update alpine docker tag to v3.21 ([8145de2](https://github.com/ichisuke55/translate-bot/commit/8145de253a19fddf84d0e6670665d501b683cb56))
+* **deps:** update dependency go to v1.25.1 ([7ac596a](https://github.com/ichisuke55/translate-bot/commit/7ac596a4bc5592f467a2d5ad746f2dae43ad2531))
+* **deps:** update golang docker tag to v1.23.4 ([77df0d3](https://github.com/ichisuke55/translate-bot/commit/77df0d3868216ed948967ffe87991e31eccf375e))
+* **deps:** update golang docker tag to v1.24.2 ([0f567bf](https://github.com/ichisuke55/translate-bot/commit/0f567bfd0b4c4956c65ae55014a4038ffad99db3))
+* respond to gocognit ([569d169](https://github.com/ichisuke55/translate-bot/commit/569d169886d7bd5508c408c4653c08f5d57a5991))
+* upgrade go version 1.22.6 ([9668469](https://github.com/ichisuke55/translate-bot/commit/96684692b42d9cd8dbe2b443f9a46476b80145a4))
+
 ## [2.1.2](https://github.com/ichisuke55/translate-bot/compare/v2.1.1...v2.1.2) (2024-05-20)
 
 
