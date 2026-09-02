@@ -1,14 +1,13 @@
 module github.com/ichisuke55/translate-bot
 
-go 1.23.0
-
+go 1.25
 
 toolchain go1.25.1
 
 require (
 	cloud.google.com/go/translate v1.10.3
 	github.com/kelseyhightower/envconfig v1.4.0
-	github.com/slack-go/slack v0.13.0
+	github.com/slack-go/slack v0.23.1
 	go.uber.org/zap v1.27.0
 )
 
@@ -26,7 +25,7 @@ require (
 	github.com/google/s2a-go v0.1.7 // indirect
 	github.com/googleapis/enterprise-certificate-proxy v0.3.2 // indirect
 	github.com/googleapis/gax-go/v2 v2.12.4 // indirect
-	github.com/gorilla/websocket v1.5.1 // indirect
+	github.com/gorilla/websocket v1.5.3 // indirect
 	go.opencensus.io v0.24.0 // indirect
 	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.51.0 // indirect
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.51.0 // indirect
